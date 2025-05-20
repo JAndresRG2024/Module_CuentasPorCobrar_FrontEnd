@@ -83,5 +83,3 @@ CREATE TRIGGER trigger_numero_pago
 BEFORE INSERT ON pagos_cabecera
 FOR EACH ROW
 EXECUTE FUNCTION generar_numero_pago();
-
--- ...existing code...
