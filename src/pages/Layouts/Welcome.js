@@ -1,0 +1,41 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+function Welcome() {
+  return (
+    <div className="text-center mt-5">
+      <h1 className="mb-4">Bienvenido</h1>
+      <p className="mb-4">
+        Este sistema te permite gestionar tus cuentas por cobrar de manera sencilla y eficiente.<br />
+        Usa el menú o las opciones rápidas para comenzar.
+      </p>
+      <img
+        src="/images/imagen1.jpeg"
+        alt="Bienvenida"
+        style={{ maxWidth: '350px', width: '100%', borderRadius: '12px', boxShadow: '0 2px 12px rgba(0,0,0,0.1)' }}
+        className="mb-4"
+      />
+
+      <div className="row justify-content-center mt-4">
+        <div className="col-md-3 mb-3">
+          <Link to="/cuentas-bancarias" className="btn btn-outline-primary btn-lg w-100">
+            <i className="bi bi-bank2 me-2"></i>
+            Cuentas Bancarias
+          </Link>
+        </div>
+        <div className="col-md-3 mb-3">
+          <Link to="/pagos" className="btn btn-outline-success btn-lg w-100">
+            <i className="bi bi-cash-coin me-2"></i>
+            Pagos
+          </Link>
+        </div>
+      </div>
+
+      <footer className="mt-5 text-muted">
+        <small>Versión 1.0 &middot; Soporte: soporte@tusistema.com</small>
+      </footer>
+    </div>
+  );
+}
+
+export default Welcome;
