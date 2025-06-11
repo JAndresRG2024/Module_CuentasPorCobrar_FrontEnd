@@ -1,6 +1,23 @@
-import React from 'react';
+import React from "react";
+import PagoDetalleTable from "./pagoDetalle_Table"; // Asegúrate de importar el componente
 
-function PagoForm({ form, onChange, onSubmit, editando, onCancel,cuentas }) {
+function PagoForm({
+  form,
+  onChange,
+  onSubmit,
+  editando,
+  onCancel,
+  cuentas,
+  detalles,
+  editingDetalle,
+  detalleForm,
+  handleDetalleChange,
+  handleEditDetalle,
+  handleDeleteDetalle,
+  handleSaveDetalle,
+  setEditingDetalle,
+  handleCreateDetalle,
+}) {
   return (
     <form onSubmit={onSubmit}>
       <div className="mb-3">
@@ -36,11 +53,12 @@ function PagoForm({ form, onChange, onSubmit, editando, onCancel,cuentas }) {
           required
         >
           <option value="">Seleccione una cuenta</option>
-          {cuentas && cuentas.map(cuenta => (
-            <option key={cuenta.id_cuenta} value={cuenta.id_cuenta}>
-              {cuenta.id_cuenta}
-            </option>
-          ))}
+          {cuentas &&
+            cuentas.map((cuenta) => (
+              <option key={cuenta.id_cuenta} value={cuenta.id_cuenta}>
+                {cuenta.id_cuenta}
+              </option>
+            ))}
         </select>
       </div>
       <div className="mb-3">
@@ -55,8 +73,26 @@ function PagoForm({ form, onChange, onSubmit, editando, onCancel,cuentas }) {
           required
         />
       </div>
-      <button type="submit" className="btn btn-success me-2">
-        {editando ? 'Actualizar' : 'Crear'}
+      <div className="mb-4">
+        <PagoDetalleTable
+          detalles={detalles}
+          editingDetalle={editingDetalle}
+          detalleForm={detalleForm}
+          handleDetalleChange={handleDetalleChange}
+          handleEditDetalle={handleEditDetalle}
+          handleDeleteDetalle={handleDeleteDetalle}
+          handleSaveDetalle={handleSaveDetalle}
+          setEditingDetalle={setEditingDetalle}
+          handleCreateDetalle={handleCreateDetalle}
+          id_pago={form.id_pago || null}
+        />
+      </div>
+      <button
+        type="submit"
+        className="btn btn-success me-2"
+        disabled={!!editingDetalle} // Deshabilita si hay un detalle en edición
+      >
+        {editando ? "Actualizar" : "Crear"}
       </button>
       {onCancel && (
         <button type="button" className="btn btn-secondary" onClick={onCancel}>
