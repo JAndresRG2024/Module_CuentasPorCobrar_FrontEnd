@@ -1,6 +1,7 @@
-const API_URL = process.env.NODE_ENV === 'production'
-    ? 'https://module-cuentasporcobrar-api.onrender.com/api/pagos'
-    : 'http://localhost:3000/api/pagos';
+const API_URL_BASE =
+  process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
+const API_URL = `${API_URL_BASE}/pagos`;
 
 export const getPagos = async () => {
   const res = await fetch(API_URL);
