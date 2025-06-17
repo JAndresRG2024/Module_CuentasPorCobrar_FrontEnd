@@ -38,7 +38,7 @@ function PagoForm({
           type="date"
           className="form-control"
           name="fecha"
-          value={form.fecha}
+          value={form.fecha ? form.fecha.substring(0, 10) : ''}
           onChange={onChange}
           required
         />

@@ -30,8 +30,6 @@ function PagoDetalleTable({
               <th>ID Detalle</th>
               <th>ID Factura</th>
               <th>Monto Pagado</th>
-              <th>Saldo Anterior</th>
-              <th>Saldo Nuevo</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -61,24 +59,6 @@ function PagoDetalleTable({
                     />
                   </td>
                   <td>
-                    <input
-                      type="number"
-                      name="saldo_anterior"
-                      value={detalleForm.saldo_anterior}
-                      onChange={handleDetalleChange}
-                      className="form-control form-control-sm"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      name="saldo_nuevo"
-                      value={detalleForm.saldo_nuevo}
-                      onChange={handleDetalleChange}
-                      className="form-control form-control-sm"
-                    />
-                  </td>
-                  <td>
                     <button
                       className="btn btn-sm btn-primary me-2"
                       onClick={() => handleSaveDetalle(id_pago)}
@@ -98,8 +78,6 @@ function PagoDetalleTable({
                   <td>{det.id_detalle}</td>
                   <td>{det.id_factura}</td>
                   <td>{det.monto_pagado}</td>
-                  <td>{det.saldo_anterior}</td>
-                  <td>{det.saldo_nuevo}</td>
                   <td>
                     <button
                       className="btn btn-sm btn-warning me-2"
@@ -137,24 +115,6 @@ function PagoDetalleTable({
                       type="number"
                       name="monto_pagado"
                       value={detalleForm.monto_pagado}
-                      onChange={handleDetalleChange}
-                      className="form-control form-control-sm"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      name="saldo_anterior"
-                      value={detalleForm.saldo_anterior}
-                      onChange={handleDetalleChange}
-                      className="form-control form-control-sm"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      name="saldo_nuevo"
-                      value={detalleForm.saldo_nuevo}
                       onChange={handleDetalleChange}
                       className="form-control form-control-sm"
                     />

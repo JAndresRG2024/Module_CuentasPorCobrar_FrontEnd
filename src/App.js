@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CuentasBancariasPage from './pages/Cuentas_Bancarias/Cuentas_Bancarias_Page';
 import PagosPage from './pages/Pagos/pagos_Page';
 import Navbar from './components/Navbar'; // ✅ Importamos el nuevo componente
