@@ -4,9 +4,10 @@ import {
     createPagoDetalle,
     updatePagoDetalle,
     deletePagoDetalle,
+    generarPDFPago
 } from '../../services/Pagos/pagos_Service';
 
-function PagoList({ pagos, onEdit, onDelete }) {
+function PagoList({ pagos, onEdit, onDelete, onPdfGenerated }) {
     const [expanded, setExpanded] = useState({});
     const [editingDetalle, setEditingDetalle] = useState(null);
     const [detalleForm, setDetalleForm] = useState({});
@@ -61,6 +62,18 @@ function PagoList({ pagos, onEdit, onDelete }) {
             }
         }
     };
+    // Acción para imprimir PDF
+    const handleImprimirPDF = async (pago) => {
+        if (window.confirm('¿Desea generar e imprimir el PDF de este pago?')) {
+            try {
+                await generarPDFPago(pago.id_pago); // Llama a tu backend para generar el PDF y marcar como generado
+                if (onPdfGenerated) onPdfGenerated(); // Opcional: para refrescar la lista desde el padre
+                window.location.reload(); // O mejor, refresca solo los datos
+            } catch (err) {
+                alert('Error al generar PDF');
+            }
+        }
+    };
 
     return (
         <table className="table table-striped table-hover align-middle">
@@ -102,20 +115,34 @@ function PagoList({ pagos, onEdit, onDelete }) {
                                 </span>
                             </td>
                             <td className="text-center">
-                                <button
-                                    className="btn btn-sm btn-warning me-2"
-                                    onClick={() => onEdit(pago)}
-                                    title="Editar"
-                                >
-                                    <i className="bi bi-pencil-square"></i> Editar
-                                </button>
-                                <button
-                                    className="btn btn-sm btn-danger"
-                                    onClick={() => onDelete(pago.id_pago)}
-                                    title="Eliminar"
-                                >
-                                    <i className="bi bi-trash"></i> Eliminar
-                                </button>
+                                {!pago.pdf_generado && (
+                                    <>
+                                        <button
+                                            className="btn btn-sm btn-primary me-2"
+                                            onClick={() => handleImprimirPDF(pago)}
+                                            title="Imprimir PDF"
+                                        >
+                                            <i className="bi bi-printer"></i> Imprimir PDF
+                                        </button>
+                                        <button
+                                            className="btn btn-sm btn-warning me-2"
+                                            onClick={() => onEdit(pago)}
+                                            title="Editar"
+                                        >
+                                            <i className="bi bi-pencil-square"></i> Editar
+                                        </button>
+                                        <button
+                                            className="btn btn-sm btn-danger"
+                                            onClick={() => onDelete(pago.id_pago)}
+                                            title="Eliminar"
+                                        >
+                                            <i className="bi bi-trash"></i> Eliminar
+                                        </button>
+                                    </>
+                                )}
+                                {pago.pdf_generado && (
+                                    <span className="text-muted">No editable</span>
+                                )}
                             </td>
                         </tr>
                         {expanded[pago.id_pago] && (
@@ -126,12 +153,13 @@ function PagoList({ pagos, onEdit, onDelete }) {
                                         editingDetalle={editingDetalle}
                                         detalleForm={detalleForm}
                                         handleDetalleChange={handleDetalleChange}
-                                        handleEditDetalle={handleEditDetalle}
-                                        handleDeleteDetalle={handleDeleteDetalle}
-                                        handleSaveDetalle={handleSaveDetalle}
+                                        handleEditDetalle={pago.pdf_generado ? undefined : handleEditDetalle}
+                                        handleDeleteDetalle={pago.pdf_generado ? undefined : handleDeleteDetalle}
+                                        handleSaveDetalle={pago.pdf_generado ? undefined : handleSaveDetalle}
                                         setEditingDetalle={setEditingDetalle}
-                                        handleCreateDetalle={handleCreateDetalle}
+                                        handleCreateDetalle={pago.pdf_generado ? undefined : handleCreateDetalle}
                                         id_pago={pago.id_pago}
+                                        pdf_generado={pago.pdf_generado}
                                     />
                                 </td>
                             </tr>

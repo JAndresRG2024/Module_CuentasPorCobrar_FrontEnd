@@ -73,3 +73,9 @@ export const deletePagoDetalle = async (id_pago, id_detalle) => {
   if (res.status !== 200) throw new Error('Error al eliminar detalle de pago');
   return res.json();
 };
+
+export async function generarPDFPago(id_pago) {
+  const res = await fetch(`/api/pagos/${id_pago}/generar-pdf`, { method: 'POST' });
+  if (!res.ok) throw new Error('Error al generar PDF');
+  return res.json();
+}
