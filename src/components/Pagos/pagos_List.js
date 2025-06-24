@@ -66,11 +66,20 @@ function PagoList({ pagos, onEdit, onDelete, onPdfGenerated }) {
     const handleImprimirPDF = async (pago) => {
         if (window.confirm('¿Desea generar e imprimir el PDF de este pago?')) {
             try {
-                await generarPDFPago(pago.id_pago); // Llama a tu backend para generar el PDF y marcar como generado
-                if (onPdfGenerated) onPdfGenerated(); // Opcional: para refrescar la lista desde el padre
-                window.location.reload(); // O mejor, refresca solo los datos
+                const res = await generarPDFPago(pago.id_pago);
+                if (res.url_pdf) {
+                    // Fuerza la descarga en el navegador del usuario
+                    const link = document.createElement('a');
+                    link.href = res.url_pdf;
+                    link.download = `pago_${pago.id_pago}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    alert('PDF generado y descargado.');
+                }
+                if (onPdfGenerated) onPdfGenerated();
             } catch (err) {
-                alert('Error al generar PDF');
+                alert('Error al generar PDF: ' + (err.message || err));
             }
         }
     };
@@ -141,7 +150,18 @@ function PagoList({ pagos, onEdit, onDelete, onPdfGenerated }) {
                                     </>
                                 )}
                                 {pago.pdf_generado && (
-                                    <span className="text-muted">No editable</span>
+                                    <>
+                                        <a
+                                            className="btn btn-sm btn-success me-2"
+                                            href={`/pdfs/pago_${pago.id_pago}.pdf`}
+                                            download={`pago_${pago.id_pago}.pdf`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            title="Descargar PDF"
+                                        >
+                                            <i className="bi bi-download"></i> Descargar PDF
+                                        </a>
+                                    </>
                                 )}
                             </td>
                         </tr>

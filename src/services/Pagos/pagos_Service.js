@@ -75,7 +75,22 @@ export const deletePagoDetalle = async (id_pago, id_detalle) => {
 };
 
 export async function generarPDFPago(id_pago) {
-  const res = await fetch(`/api/pagos/${id_pago}/generar-pdf`, { method: 'POST' });
-  if (!res.ok) throw new Error('Error al generar PDF');
-  return res.json();
+  const res = await fetch(`${API_URL}/${id_pago}/generar-pdf`, {
+    method: 'POST',
+  });
+
+  if (!res.ok) throw new Error('Error al generar PDF desde el servidor');
+
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `pago_${id_pago}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  window.URL.revokeObjectURL(url);
+  alert('✅ PDF generado y descargado correctamente');
 }
