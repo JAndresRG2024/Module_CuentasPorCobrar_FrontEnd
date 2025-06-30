@@ -40,24 +40,25 @@ export const deletePago = async (id) => {
   if (res.status !== 200) throw new Error('Error al eliminar pago');
 };
 
-export const getPagoDetalle = async (id_pago, id_detalle) => {
-  const res = await fetch(`${API_URL}/${id_pago}/detalles/${id_detalle}`);
+export const getPagoDetalle = async (id_detalle) => {
+  const res = await fetch(`${API_URL_BASE}/pagos-detalle/${id_detalle}`);
   if (!res.ok) throw new Error('Error al obtener el detalle de pago');
   return res.json();
 };
 
 export const createPagoDetalle = async (id_pago, data) => {
-  const res = await fetch(`${API_URL}/${id_pago}/detalles`, {
+  // id_pago se envía en el body
+  const res = await fetch(`${API_URL_BASE}/pagos-detalle`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: JSON.stringify({ ...data, id_pago }),
   });
   if (!res.ok) throw new Error('Error al crear detalle de pago');
   return res.json();
 };
 
-export const updatePagoDetalle = async (id_pago, id_detalle, data) => {
-  const res = await fetch(`${API_URL}/${id_pago}/detalles/${id_detalle}`, {
+export const updatePagoDetalle = async (id_detalle, data) => {
+  const res = await fetch(`${API_URL_BASE}/pagos-detalle/${id_detalle}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -66,11 +67,17 @@ export const updatePagoDetalle = async (id_pago, id_detalle, data) => {
   return res.json();
 };
 
-export const deletePagoDetalle = async (id_pago, id_detalle) => {
-  const res = await fetch(`${API_URL}/${id_pago}/detalles/${id_detalle}`, {
+export const deletePagoDetalle = async (id_detalle) => {
+  const res = await fetch(`${API_URL_BASE}/pagos-detalle/${id_detalle}`, {
     method: 'DELETE',
   });
   if (res.status !== 200) throw new Error('Error al eliminar detalle de pago');
+  return res.json();
+};
+
+export const getAllDetalles = async () => {
+  const res = await fetch(`${API_URL_BASE}/pagos-detalle`);
+  if (!res.ok) throw new Error('Error al obtener detalles');
   return res.json();
 };
 

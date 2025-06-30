@@ -1,5 +1,5 @@
 import React from "react";
-import PagoDetalleTable from "./pagoDetalle_Table"; // Asegúrate de importar el componente
+import PagoDetalleTable from "./pagoDetalle_Table";
 
 function PagoForm({
   form,
@@ -9,6 +9,7 @@ function PagoForm({
   onCancel,
   cuentas,
   detalles,
+  clientes,
   editingDetalle,
   detalleForm,
   handleDetalleChange,
@@ -17,6 +18,8 @@ function PagoForm({
   handleSaveDetalle,
   setEditingDetalle,
   handleCreateDetalle,
+  facturas,
+  todosDetalles
 }) {
   return (
     <form onSubmit={onSubmit}>
@@ -62,16 +65,22 @@ function PagoForm({
         </select>
       </div>
       <div className="mb-3">
-        <label className="form-label">ID Cliente</label>
-        <input
-          type="number"
-          className="form-control"
+        <label className="form-label">Cliente</label>
+        <select
+          className="form-select"
           name="id_cliente"
-          placeholder="ID del cliente"
           value={form.id_cliente}
           onChange={onChange}
           required
-        />
+          disabled={editando} // <-- deshabilita en edición
+        >
+          <option value="">Seleccione un cliente</option>
+          {clientes && clientes.map((cliente) => (
+            <option key={cliente.id_cliente} value={cliente.id_cliente}>
+              {cliente.nombre} {cliente.apellido} ({cliente.id_cliente})
+            </option>
+          ))}
+        </select>
       </div>
       <div className="mb-4">
         <PagoDetalleTable
@@ -85,12 +94,15 @@ function PagoForm({
           setEditingDetalle={setEditingDetalle}
           handleCreateDetalle={handleCreateDetalle}
           id_pago={form.id_pago || null}
+          facturas={facturas || []}
+          todosDetalles={todosDetalles}
+
         />
       </div>
       <button
         type="submit"
         className="btn btn-success me-2"
-        disabled={!!editingDetalle} // Deshabilita si hay un detalle en edición
+        disabled={!!editingDetalle}
       >
         {editando ? "Actualizar" : "Crear"}
       </button>
