@@ -23,20 +23,20 @@ function PagoDetalleTable({
 
   // Helper para calcular el monto pagado acumulado en una factura, excluyendo un detalle específico si se indica
   const getPagadoPorFactura = (id_factura, excludeIdDetalle = null) => {
-  const detallesUnicos = [
-    ...(todosDetalles || []),
-    ...(detalles || [])
-  ].reduce((acc, d) => {
-    acc[String(d.id_detalle)] = d;
-    return acc;
-  }, {});
-  return Object.values(detallesUnicos)
-    .filter(d =>
-      String(d.id_factura) === String(id_factura) &&
-      (excludeIdDetalle === null || String(d.id_detalle) !== String(excludeIdDetalle))
-    )
-    .reduce((sum, d) => sum + Number(d.monto_pagado), 0);
-};
+    const detallesUnicos = [
+      ...(todosDetalles || []),
+      ...(detalles || [])
+    ].reduce((acc, d) => {
+      acc[String(d.id_detalle)] = d;
+      return acc;
+    }, {});
+    return Object.values(detallesUnicos)
+      .filter(d =>
+        String(d.id_factura) === String(id_factura) &&
+        (excludeIdDetalle === null || String(d.id_detalle) !== String(excludeIdDetalle))
+      )
+      .reduce((sum, d) => sum + Number(d.monto_pagado), 0);
+  };
 
   /**
    * Componente fila de edición / creación
@@ -112,8 +112,8 @@ function PagoDetalleTable({
     const montoTotal = getMontoTotalFactura(detalle.id_factura);
     const pagadoTotal = getPagadoPorFactura(detalle.id_factura, null);
     const pendiente = montoTotal
-    ? (montoTotal - pagadoTotal).toFixed(2)
-    : "-";
+      ? (montoTotal - pagadoTotal).toFixed(2)
+      : "-";
     return (
       <tr key={detalle.id_detalle}>
         <td>{detalle.id_detalle}</td>
@@ -180,17 +180,6 @@ function PagoDetalleTable({
             })}
 
             {/* Fila de creación de nuevo detalle */}
-            {detalles.map(detalle => {
-              const isEditing = editingDetalle &&
-                editingDetalle.id_pago === id_pago &&
-                editingDetalle.id_detalle === detalle.id_detalle;
-
-              return isEditing && !pdf_generado
-                ? <DetalleEditRow key={detalle.id_detalle} detalle={detalle} />
-                : <DetalleReadOnlyRow key={detalle.id_detalle} detalle={detalle} />;
-            })}
-
-            {/* Fila de creación de nuevo detalle */}
             {editingDetalle &&
               editingDetalle.id_pago === id_pago &&
               editingDetalle.id_detalle === null &&
@@ -207,4 +196,3 @@ function PagoDetalleTable({
 }
 
 export default PagoDetalleTable;
-

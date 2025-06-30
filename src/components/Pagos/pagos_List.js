@@ -3,25 +3,15 @@ import { generarPDFPago } from '../../services/Pagos/pagos_Service';
 
 function PagoList({ pagos, onEdit, onDelete, onPdfGenerated }) {
   const handleImprimirPDF = async (pago) => {
-    if (window.confirm("¿Desea generar e imprimir el PDF de este pago?")) {
-      try {
-        const res = await generarPDFPago(pago.id_pago);
-        if (res.url_pdf) {
-          // Fuerza descarga
-          const link = document.createElement("a");
-          link.href = res.url_pdf;
-          link.download = `pago_${pago.id_pago}.pdf`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          alert("PDF generado y descargado.");
-        }
-        if (onPdfGenerated) onPdfGenerated();
-      } catch (err) {
-        alert("Error al generar PDF: " + (err.message || err));
-      }
+  if (window.confirm("¿Desea generar e imprimir el PDF de este pago?")) {
+    try {
+      await generarPDFPago(pago.id_pago);
+      if (onPdfGenerated) onPdfGenerated();
+    } catch (err) {
+      alert("Error al generar PDF: " + (err.message || err));
     }
-  };
+  }
+};
 
   return (
     <table className="table table-striped table-hover align-middle">
