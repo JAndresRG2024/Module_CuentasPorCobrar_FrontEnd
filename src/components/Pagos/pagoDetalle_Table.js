@@ -180,6 +180,17 @@ function PagoDetalleTable({
             })}
 
             {/* Fila de creación de nuevo detalle */}
+            {detalles.map(detalle => {
+              const isEditing = editingDetalle &&
+                editingDetalle.id_pago === id_pago &&
+                editingDetalle.id_detalle === detalle.id_detalle;
+
+              return isEditing && !pdf_generado
+                ? <DetalleEditRow key={detalle.id_detalle} detalle={detalle} />
+                : <DetalleReadOnlyRow key={detalle.id_detalle} detalle={detalle} />;
+            })}
+
+            {/* Fila de creación de nuevo detalle */}
             {editingDetalle &&
               editingDetalle.id_pago === id_pago &&
               editingDetalle.id_detalle === null &&
@@ -196,3 +207,4 @@ function PagoDetalleTable({
 }
 
 export default PagoDetalleTable;
+

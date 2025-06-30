@@ -1,5 +1,5 @@
-import React from "react";
-import { generarPDFPago } from "../../services/Pagos/pagos_Service";
+import React from 'react';
+import { generarPDFPago } from '../../services/Pagos/pagos_Service';
 
 function PagoList({ pagos, onEdit, onDelete, onPdfGenerated }) {
   const handleImprimirPDF = async (pago) => {
