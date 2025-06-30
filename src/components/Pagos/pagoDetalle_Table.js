@@ -157,7 +157,7 @@ function PagoDetalleTable({
         )}
       </div>
 
-      {Array.isArray(detalles) && detalles.length > 0 ? (
+       {Array.isArray(detalles) && detalles.length > 0 ? (
         <table className="table table-bordered mt-2">
           <thead>
             <tr>
@@ -189,7 +189,31 @@ function PagoDetalleTable({
           </tbody>
         </table>
       ) : (
-        <div className="text-muted">Sin detalles</div>
+        <>
+          {/* Mostrar fila de creación aunque no haya detalles */}
+          {editingDetalle &&
+            editingDetalle.id_pago === id_pago &&
+            editingDetalle.id_detalle === null &&
+            !pdf_generado ? (
+              <table className="table table-bordered mt-2">
+                <thead>
+                  <tr>
+                    <th>ID Detalle</th>
+                    <th>ID Factura</th>
+                    <th>Monto Pagado</th>
+                    <th>Pendiente</th>
+                    {!pdf_generado && <th>Acciones</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  <DetalleEditRow detalle={null} />
+                </tbody>
+              </table>
+            ) : (
+              <div className="text-muted">Sin detalles</div>
+            )
+          }
+        </>
       )}
     </div>
   );
