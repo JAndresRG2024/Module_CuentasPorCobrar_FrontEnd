@@ -101,17 +101,17 @@ const handleDetalleChange = e => {
 };
 
   const handleCreateDetalle = () => {
-    setEditingDetalle({ id_pago: form.id_pago, id_detalle: null });
-    setDetalleForm({ id_factura: '', monto_pagado: '' });
-  };
+  setEditingDetalle('new'); // o true, o null, pero usa un valor PRIMITIVO
+  setDetalleForm({ id_factura: '', monto_pagado: '' });
+};
 
-  const handleEditDetalle = (id_pago, detalle) => {
-    setEditingDetalle({ id_pago, id_detalle: detalle.id_detalle });
-    setDetalleForm({
-      id_factura: detalle.id_factura,
-      monto_pagado: detalle.monto_pagado,
-    });
-  };
+const handleEditDetalle = (id_pago, detalle) => {
+  setEditingDetalle(detalle.id_detalle);
+  setDetalleForm({
+    id_factura: detalle.id_factura,
+    monto_pagado: detalle.monto_pagado,
+  });
+};
 
   const handleSaveDetalle = async (id_pago) => {
     try {

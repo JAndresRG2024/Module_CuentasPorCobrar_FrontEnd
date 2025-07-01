@@ -3,8 +3,6 @@ import React from "react";
 function PagoDetalleTable({
   detalles,
   editingDetalle,
-  detalleForm,
-  handleDetalleChange,
   handleEditDetalle,
   handleDeleteDetalle,
   handleSaveDetalle,
@@ -15,13 +13,11 @@ function PagoDetalleTable({
   facturas,
   todosDetalles
 }) {
-  // Helper para obtener el monto total de la factura
   const getMontoTotalFactura = (id_factura) => {
     const factura = facturas?.find(f => String(f.id_factura) === String(id_factura));
     return factura ? Number(factura.monto_total) : 0;
   };
 
-  // Helper para calcular el monto pagado acumulado en una factura, excluyendo un detalle específico si se indica
   const getPagadoPorFactura = (id_factura, excludeIdDetalle = null) => {
     const detallesUnicos = [
       ...(todosDetalles || []),
@@ -39,23 +35,45 @@ function PagoDetalleTable({
   };
 
   /**
-   * Componente fila de edición / creación
+   * Fila de edición con estado interno
    */
   const DetalleEditRow = ({ detalle }) => {
-    const montoTotal = getMontoTotalFactura(detalleForm.id_factura);
-    const pagadoPrevio = getPagadoPorFactura(detalleForm.id_factura, detalle?.id_detalle);
+    const [localForm, setLocalForm] = React.useState({
+      id_detalle: detalle?.id_detalle || null,
+      id_factura: detalle?.id_factura || '',
+      monto_pagado: detalle?.monto_pagado || ''
+    });
+
+    // Calcular pendiente dinámico
+    const montoTotal = getMontoTotalFactura(localForm.id_factura);
+    const pagadoPrevio = getPagadoPorFactura(localForm.id_factura, localForm.id_detalle);
     const pendiente = montoTotal
-      ? (montoTotal - pagadoPrevio - Number(detalleForm.monto_pagado || 0)).toFixed(2)
+      ? (montoTotal - pagadoPrevio - Number(localForm.monto_pagado || 0)).toFixed(2)
       : "-";
 
+    const handleChange = e => {
+      const { name, value } = e.target;
+
+      if (name === "monto_pagado") {
+        let monto = Number(value);
+        let max = montoTotal - pagadoPrevio;
+        if (max < 0) max = 0;
+        if (monto > max) monto = max;
+        if (monto < 0) monto = 0;
+        setLocalForm(prev => ({ ...prev, [name]: monto }));
+      } else {
+        setLocalForm(prev => ({ ...prev, [name]: value }));
+      }
+    };
+
     return (
-      <tr key={detalle?.id_detalle || "nuevo"}>
-        <td>{detalle?.id_detalle || "Nuevo"}</td>
+      <tr key={`edit-${localForm.id_detalle || 'new'}`}>
+        <td>{localForm.id_detalle || "Nuevo"}</td>
         <td>
           <select
             name="id_factura"
-            value={detalleForm.id_factura}
-            onChange={handleDetalleChange}
+            value={localForm.id_factura}
+            onChange={handleChange}
             className="form-control form-control-sm"
             required
           >
@@ -71,17 +89,9 @@ function PagoDetalleTable({
           <input
             type="number"
             name="monto_pagado"
-            value={detalleForm.monto_pagado}
-            onChange={handleDetalleChange}
+            value={localForm.monto_pagado}
+            onChange={handleChange}
             className="form-control form-control-sm"
-            min={0}
-            max={
-              montoTotal
-                ? montoTotal - pagadoPrevio >= 0
-                  ? montoTotal - pagadoPrevio
-                  : 0
-                : undefined
-            }
           />
         </td>
         <td>{pendiente}</td>
@@ -89,7 +99,7 @@ function PagoDetalleTable({
           <button
             type="button"
             className="btn btn-sm btn-primary me-2"
-            onClick={() => handleSaveDetalle(id_pago)}
+            onClick={() => handleSaveDetalle(id_pago, localForm)}
           >
             Guardar
           </button>
@@ -106,7 +116,7 @@ function PagoDetalleTable({
   };
 
   /**
-   * Componente fila en modo lectura
+   * Fila de solo lectura
    */
   const DetalleReadOnlyRow = ({ detalle }) => {
     const montoTotal = getMontoTotalFactura(detalle.id_factura);
@@ -114,6 +124,7 @@ function PagoDetalleTable({
     const pendiente = montoTotal
       ? (montoTotal - pagadoTotal).toFixed(2)
       : "-";
+
     return (
       <tr key={detalle.id_detalle}>
         <td>{detalle.id_detalle}</td>
@@ -146,7 +157,7 @@ function PagoDetalleTable({
     <div>
       <div className="d-flex justify-content-between align-items-center mb-2">
         <strong>Detalles del pago:</strong>
-        {!pdf_generado && (
+        {!pdf_generado && !editingDetalle && (
           <button
             type="button"
             className="btn btn-sm btn-success"
@@ -157,7 +168,7 @@ function PagoDetalleTable({
         )}
       </div>
 
-       {Array.isArray(detalles) && detalles.length > 0 ? (
+      {Array.isArray(detalles) && detalles.length > 0 ? (
         <table className="table table-bordered mt-2">
           <thead>
             <tr>
@@ -170,49 +181,38 @@ function PagoDetalleTable({
           </thead>
           <tbody>
             {detalles.map(detalle => {
-              const isEditing = editingDetalle &&
-                editingDetalle.id_pago === id_pago &&
-                editingDetalle.id_detalle === detalle.id_detalle;
-
+              const isEditing = editingDetalle === detalle.id_detalle;
               return isEditing && !pdf_generado
-                ? <DetalleEditRow key={detalle.id_detalle} detalle={detalle} />
+                ? <DetalleEditRow key={`edit-${detalle.id_detalle}`} detalle={detalle} />
                 : <DetalleReadOnlyRow key={detalle.id_detalle} detalle={detalle} />;
             })}
 
-            {/* Fila de creación de nuevo detalle */}
-            {editingDetalle &&
-              editingDetalle.id_pago === id_pago &&
-              editingDetalle.id_detalle === null &&
-              !pdf_generado && (
-                <DetalleEditRow detalle={null} />
-              )}
+            {/* fila de nuevo detalle */}
+            {editingDetalle === 'new' && !pdf_generado && (
+              <DetalleEditRow key="nuevo" detalle={null} />
+            )}
           </tbody>
         </table>
       ) : (
         <>
-          {/* Mostrar fila de creación aunque no haya detalles */}
-          {editingDetalle &&
-            editingDetalle.id_pago === id_pago &&
-            editingDetalle.id_detalle === null &&
-            !pdf_generado ? (
-              <table className="table table-bordered mt-2">
-                <thead>
-                  <tr>
-                    <th>ID Detalle</th>
-                    <th>ID Factura</th>
-                    <th>Monto Pagado</th>
-                    <th>Pendiente</th>
-                    {!pdf_generado && <th>Acciones</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  <DetalleEditRow detalle={null} />
-                </tbody>
-              </table>
-            ) : (
-              <div className="text-muted">Sin detalles</div>
-            )
-          }
+          {editingDetalle === 'new' && !pdf_generado ? (
+            <table className="table table-bordered mt-2">
+              <thead>
+                <tr>
+                  <th>ID Detalle</th>
+                  <th>ID Factura</th>
+                  <th>Monto Pagado</th>
+                  <th>Pendiente</th>
+                  {!pdf_generado && <th>Acciones</th>}
+                </tr>
+              </thead>
+              <tbody>
+                <DetalleEditRow key="nuevo" detalle={null} />
+              </tbody>
+            </table>
+          ) : (
+            <div className="text-muted">Sin detalles</div>
+          )}
         </>
       )}
     </div>
