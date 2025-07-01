@@ -5,19 +5,12 @@ import { updatePago, getPagoById } from '../../services/Pagos/pagos_Service';
 import { getCuentas } from '../../services/Cuentas_Bancarias/cuentas_Bancarias_Service';
 import {
   createPagoDetalle,
-} from '../../services/Pagos/pagos_Service';
-import {
   updatePagoDetalle,
-} from '../../services/Pagos/pagos_Service';
-import {
   deletePagoDetalle,
+  getAllDetalles
 } from '../../services/Pagos/pagos_Service';
-import {
-  getClientes,
-} from '../../services/externos/clientes_Service';
+import { getClientes } from '../../services/externos/clientes_Service';
 import { getFacturasPorCliente } from '../../services/externos/facturas_Service';
-import { getAllDetalles } from '../../services/Pagos/pagos_Service';
-
 
 function EditarPagoPage() {
   const { id } = useParams();
@@ -27,20 +20,17 @@ function EditarPagoPage() {
   const [clientes, setClientes] = React.useState([]);
   const [detalles, setDetalles] = React.useState([]);
   const [editingDetalle, setEditingDetalle] = React.useState(null);
-  const [detalleForm, setDetalleForm] = React.useState({ id_factura: '', monto_pagado: '' });
   const [facturas, setFacturas] = React.useState([]);
   const [todosDetalles, setTodosDetalles] = React.useState([]);
   const navigate = useNavigate();
 
-  
-React.useEffect(() => {
-  getAllDetalles().then(setTodosDetalles).catch(() => setTodosDetalles([]));
-}, []);
+  React.useEffect(() => {
+    getAllDetalles().then(setTodosDetalles).catch(() => setTodosDetalles([]));
+  }, []);
 
   React.useEffect(() => {
     getCuentas().then(setCuentas).catch(() => setCuentas([]));
     getClientes().then(setClientes).catch(() => setClientes([]));
-
   }, []);
 
   React.useEffect(() => {
@@ -48,7 +38,6 @@ React.useEffect(() => {
       .then(async data => {
         setForm(data);
         setDetalles(data.detalles || []);
-        // Obtener facturas del cliente relacionado al pago
         if (data.id_cliente) {
           try {
             const facturasCliente = await getFacturasPorCliente(data.id_cliente);
@@ -77,61 +66,36 @@ React.useEffect(() => {
     }));
   };
 
-  // Handlers para detalles
-const handleDetalleChange = e => {
-  const { name, value } = e.target;
-  if (name === "monto_pagado") {
-    const montoTotal = facturas.find(f => String(f.id_factura) === String(detalleForm.id_factura))?.monto_total ?? 0;
-    // Usa todosDetalles para sumar todos los pagos previos de esa factura, excepto el que se está editando
-    const pagadoPrevio = todosDetalles
-      .filter(d => String(d.id_factura) === String(detalleForm.id_factura) && d.id_detalle !== editingDetalle?.id_detalle)
-      .reduce((sum, d) => sum + Number(d.monto_pagado), 0);
-    let max = montoTotal - pagadoPrevio;
-    if (max < 0) max = 0;
-    if (Number(value) > max) {
-      setDetalleForm(prev => ({ ...prev, [name]: max }));
-      return;
-    }
-    if (Number(value) < 0) {
-      setDetalleForm(prev => ({ ...prev, [name]: 0 }));
-      return;
-    }
-  }
-  setDetalleForm(prev => ({ ...prev, [name]: value }));
-};
-
+  // eliminamos detalleForm porque irá a nivel de fila
   const handleCreateDetalle = () => {
-  setEditingDetalle('new'); // o true, o null, pero usa un valor PRIMITIVO
-  setDetalleForm({ id_factura: '', monto_pagado: '' });
-};
+    setEditingDetalle('new');
+  };
 
-const handleEditDetalle = (id_pago, detalle) => {
-  setEditingDetalle(detalle.id_detalle);
-  setDetalleForm({
-    id_factura: detalle.id_factura,
-    monto_pagado: detalle.monto_pagado,
-  });
-};
+  const handleEditDetalle = (id_pago, detalle) => {
+    setEditingDetalle(detalle.id_detalle);
+  };
 
-  const handleSaveDetalle = async (id_pago) => {
+  const handleSaveDetalle = async (id_pago, detalleData) => {
     try {
-      console.log('Guardando detalle:', { id_pago, detalleForm, editingDetalle });
-      if (!detalleForm.id_factura || !detalleForm.monto_pagado) {
+      console.log('Guardando detalle:', { id_pago, detalleData });
+      if (!detalleData.id_factura || !detalleData.monto_pagado) {
         alert('Debe seleccionar una factura y un monto válido');
         return;
       }
-      if (editingDetalle.id_detalle) {
-        await updatePagoDetalle(editingDetalle.id_detalle, {
-          ...detalleForm,
-          id_pago: form.id_pago, // <--- agrega id_pago
+      if (detalleData.id_detalle) {
+        await updatePagoDetalle(detalleData.id_detalle, {
+          ...detalleData,
+          id_pago: form.id_pago
         });
       } else {
-        await createPagoDetalle(id_pago, detalleForm);
+        await createPagoDetalle(id_pago, {
+          ...detalleData,
+          id_pago: form.id_pago
+        });
       }
       const updated = await getPagoById(id);
       setDetalles(updated.detalles || []);
       setEditingDetalle(null);
-      setDetalleForm({ id_factura: '', monto_pagado: '' });
     } catch (err) {
       console.error('Error al guardar detalle:', err);
       alert('Error al guardar detalle');
@@ -171,8 +135,6 @@ const handleEditDetalle = (id_pago, detalle) => {
           clientes={clientes}
           detalles={detalles}
           editingDetalle={editingDetalle}
-          detalleForm={detalleForm}
-          handleDetalleChange={handleDetalleChange}
           handleEditDetalle={handleEditDetalle}
           handleDeleteDetalle={handleDeleteDetalle}
           handleSaveDetalle={handleSaveDetalle}
@@ -180,10 +142,10 @@ const handleEditDetalle = (id_pago, detalle) => {
           handleCreateDetalle={handleCreateDetalle}
           facturas={facturas}
           todosDetalles={todosDetalles}
-
         />
       </div>
     </div>
   );
 }
+
 export default EditarPagoPage;
