@@ -101,3 +101,18 @@ export async function generarPDFPago(id_pago) {
   window.URL.revokeObjectURL(url);
   alert('✅ PDF generado y descargado correctamente');
 }
+
+export async function generarReportePagos() {
+  const res = await fetch(`${API_URL}/reporte/general`, { method: 'POST' });
+  if (!res.ok) throw new Error('Error al generar el reporte PDF desde service');
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `reporte_pagos.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove(); // Usa el mismo método que en generarPDFPago
+  window.URL.revokeObjectURL(url);
+  alert('✅ Reporte PDF generado y descargado correctamente');
+}

@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import PagoList from "../../components/Pagos/pagos_List";
 import { getPagos, deletePago } from "../../services/Pagos/pagos_Service";
-
+import { generarReportePagos } from '../../services/Pagos/pagos_Service';
 function PagosListPage() {
   const [pagos, setPagos] = React.useState([]);
   const navigate = useNavigate();
@@ -28,12 +28,20 @@ function PagosListPage() {
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Pagos</h2>
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate("/pagos/nuevo")}
-        >
-          Nuevo Pago
-        </button>
+        <div>
+          <button
+            className="btn btn-primary me-2 mb-0"
+            onClick={() => navigate("/pagos/nuevo")}
+          >
+            <i className="bi bi-plus-lg"></i> Nuevo Pago
+          </button>
+          <button
+            className="btn btn-info mb-0"
+            onClick={generarReportePagos}
+          >
+            <i className="bi bi-printer"></i> Imprimir reporte de pagos
+          </button>
+        </div>
       </div>
       <div className="card p-4 shadow">
         <PagoList 
