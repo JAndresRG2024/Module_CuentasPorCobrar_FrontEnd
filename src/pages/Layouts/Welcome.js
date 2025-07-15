@@ -1,7 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 function Welcome() {
+  const { usuario, permisos } = useAuth();
+
+  // Solo admin puede ver botón de bancos
+  const esAdmin = usuario?.nombre_rol === 'Admin' || usuario?.nombre_rol === 'Admin CC';
+  // Solo si tiene permiso "Pagos"
+  const tienePermisoPagos = permisos.some(p => p.nombre_permiso === 'Pagos' && p.estado);
+
   return (
     <div className="text-center mt-5">
       <h1 className="mb-4">Bienvenido</h1>
@@ -17,18 +25,22 @@ function Welcome() {
       />
 
       <div className="row justify-content-center mt-4">
-        <div className="col-md-3 mb-3">
-          <Link to="/cuentas-bancarias" className="btn btn-outline-primary btn-lg w-100">
-            <i className="bi bi-bank2 me-2"></i>
-            Cuentas Bancarias
-          </Link>
-        </div>
-        <div className="col-md-3 mb-3">
-          <Link to="/pagos" className="btn btn-outline-success btn-lg w-100">
-            <i className="bi bi-cash-coin me-2"></i>
-            Pagos
-          </Link>
-        </div>
+        {esAdmin && (
+          <div className="col-md-3 mb-3">
+            <Link to="/cuentas-bancarias" className="btn btn-outline-primary btn-lg w-100">
+              <i className="bi bi-bank2 me-2"></i>
+              Cuentas Bancarias
+            </Link>
+          </div>
+        )}
+        {tienePermisoPagos && (
+          <div className="col-md-3 mb-3">
+            <Link to="/pagos" className="btn btn-outline-success btn-lg w-100">
+              <i className="bi bi-cash-coin me-2"></i>
+              Pagos
+            </Link>
+          </div>
+        )}
       </div>
 
       <footer className="mt-5 text-muted">
