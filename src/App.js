@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import Welcome from './pages/Layouts/Welcome';
 import { PrivateRoute } from './components/PrivateRoute';
 import { useAuthInit } from './hooks/useAuthInit';
+import Login from './pages/Login';
 
 function App() {
   useAuthInit();
@@ -30,6 +31,7 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route path="/login" element={<Login />} />
           <Route path="/" element={<Welcome />} />
         </Routes>
       </div>
