@@ -143,7 +143,7 @@ function PagoDetalleTable({
             <button
               type="button"
               className="btn btn-sm btn-danger"
-              onClick={() => handleDeleteDetalle(id_pago, detalle.id_detalle)}
+              onClick={() => handleDeleteDetalle(detalle.id_detalle)}
             >
               Eliminar
             </button>
