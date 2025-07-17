@@ -6,6 +6,8 @@ function PagoDetalleTable({
   handleEditDetalle,
   handleDeleteDetalle,
   handleCreateDetalle,
+  handleSaveDetalle,
+  setEditingDetalle,
   id_pago,
   pdf_generado,
   facturas,
@@ -93,6 +95,22 @@ function PagoDetalleTable({
           />
         </td>
         <td>{pendiente}</td>
+              <td>
+          <button
+            type="button"
+            className="btn btn-sm btn-primary me-2"
+            onClick={() => handleSaveDetalle(id_pago, localForm)}
+          >
+            Guardar
+          </button>
+          <button
+            type="button"
+            className="btn btn-sm btn-secondary"
+            onClick={() => setEditingDetalle(null)}
+          >
+            Cancelar
+          </button>
+        </td>
       </tr>
     );
   };
