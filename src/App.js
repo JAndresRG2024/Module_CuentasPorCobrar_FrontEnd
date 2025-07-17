@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CuentasBancariasPage from './pages/Cuentas_Bancarias/Cuentas_Bancarias_Page';
 import PagosPage from './pages/Pagos/pagos_Page';
 import Navbar from './components/Navbar';
+import ReporteEstadoCuenta from './pages/Reportes/reporte_page';
 import Welcome from './pages/Layouts/Welcome';
 import { PrivateRoute } from './components/PrivateRoute';
 import { useAuthInit } from './hooks/useAuthInit';
@@ -31,6 +32,11 @@ function App() {
               </PrivateRoute>
             }
           />
+           <Route
+            path="/reportes"
+            element={
+              <ReporteEstadoCuenta />
+            }/>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Welcome />} />
         </Routes>

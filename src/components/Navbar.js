@@ -35,6 +35,11 @@ const Navbar = () => {
               </NavLink>
             </li>
           )}
+          <li className="nav-item">
+            <NavLink className="nav-link" to="/reportes">
+              Reportes
+            </NavLink>
+          </li>
         </ul>
         <div className="d-flex align-items-center ms-auto">
           {usuario && usuario.nombre ? (

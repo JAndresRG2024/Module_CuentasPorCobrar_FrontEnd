@@ -11,6 +11,7 @@ import {
 } from '../../services/Pagos/pagos_Service';
 import { getClientes } from '../../services/externos/clientes_Service';
 import { getFacturasPorCliente } from '../../services/externos/facturas_Service';
+import { generarPDFPago } from '../../services/Pagos/pagos_Service';
 
 function EditarPagoPage() {
   const { id } = useParams();
@@ -66,6 +67,16 @@ function EditarPagoPage() {
     }));
   };
 
+  const handleImprimirPDF = async (pago) => {
+    if (window.confirm("¿Desea generar e imprimir el PDF de este pago?")) {
+      try {
+        await generarPDFPago(pago.id_pago);
+        // Opcional: recargar datos del pago si es necesario
+      } catch (err) {
+        alert("Error al generar PDF: " + (err.message || err));
+      }
+    }
+  };
   // eliminamos detalleForm porque irá a nivel de fila
   const handleCreateDetalle = () => {
     setEditingDetalle('new');
@@ -142,6 +153,7 @@ function EditarPagoPage() {
           handleCreateDetalle={handleCreateDetalle}
           facturas={facturas}
           todosDetalles={todosDetalles}
+          handleImprimirPDF={handleImprimirPDF}
         />
       </div>
     </div>

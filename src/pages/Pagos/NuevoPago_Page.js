@@ -238,11 +238,13 @@ function NuevoPagoPage() {
             >
               <option value="">Seleccione una cuenta</option>
               {cuentas &&
-                cuentas.map((cuenta) => (
-                  <option key={cuenta.id_cuenta} value={cuenta.id_cuenta}>
-                    {cuenta.id_cuenta} - {cuenta.nombre_cuenta} - {cuenta.entidad_bancaria}
-                  </option>
-                ))}
+                cuentas
+                  .filter(cuenta => cuenta.estado === true)
+                  .map((cuenta) => (
+                    <option key={cuenta.id_cuenta} value={cuenta.id_cuenta}>
+                      {cuenta.id_cuenta} - {cuenta.nombre_cuenta} - {cuenta.entidad_bancaria}
+                    </option>
+                  ))}
             </select>
           </div>
           <div className="mb-3">

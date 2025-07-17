@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import PagoDetalleTable from "./pagoDetalle_Table";
+import { useNavigate } from "react-router-dom";
 
 function PagoForm({
   form,
@@ -19,8 +20,22 @@ function PagoForm({
   setEditingDetalle,
   handleCreateDetalle,
   facturas,
-  todosDetalles
+  todosDetalles,
+  handleImprimirPDF
 }) {
+  const [bloqueandoEdicion, setBloqueandoEdicion] = useState(false);
+  const navigate = useNavigate();
+
+  const handleImprimirClick = async () => {
+    setBloqueandoEdicion(true);
+    try {
+      await handleImprimirPDF(form);
+      navigate("/pagos");
+    } finally {
+      setBloqueandoEdicion(true);
+    }
+  };
+
   return (
     <form onSubmit={onSubmit}>
       <div className="mb-3">
@@ -33,6 +48,7 @@ function PagoForm({
           value={form.descripcion}
           onChange={onChange}
           required
+          disabled={bloqueandoEdicion}
         />
       </div>
       <div className="mb-3">
@@ -44,6 +60,7 @@ function PagoForm({
           value={form.fecha ? form.fecha.substring(0, 10) : ''}
           onChange={onChange}
           required
+          disabled={bloqueandoEdicion}
         />
       </div>
       <div className="mb-3">
@@ -54,14 +71,17 @@ function PagoForm({
           value={form.id_cuenta}
           onChange={onChange}
           required
+          disabled={bloqueandoEdicion}
         >
           <option value="">Seleccione una cuenta</option>
           {cuentas &&
-            cuentas.map((cuenta) => (
-              <option key={cuenta.id_cuenta} value={cuenta.id_cuenta}>
-                {cuenta.id_cuenta}
-              </option>
-            ))}
+            cuentas
+              .filter(cuenta => cuenta.estado === true || cuenta.estado === "true")
+              .map((cuenta) => (
+                <option key={cuenta.id_cuenta} value={cuenta.id_cuenta}>
+                  {cuenta.id_cuenta}
+                </option>
+              ))}
         </select>
       </div>
       <div className="mb-3">
@@ -72,7 +92,7 @@ function PagoForm({
           value={form.id_cliente}
           onChange={onChange}
           required
-          disabled={editando} // <-- deshabilita en edición
+          disabled={editando || bloqueandoEdicion}
         >
           <option value="">Seleccione un cliente</option>
           {clientes && clientes.map((cliente) => (
@@ -96,16 +116,26 @@ function PagoForm({
           id_pago={form.id_pago || null}
           facturas={facturas || []}
           todosDetalles={todosDetalles}
-
+          disabled={bloqueandoEdicion}
         />
       </div>
       <button
         type="submit"
         className="btn btn-success me-2"
-        disabled={!!editingDetalle}
+        disabled={!!editingDetalle || bloqueandoEdicion}
       >
         {editando ? "Actualizar" : "Crear"}
       </button>
+      {editando && handleImprimirPDF && (
+        <button
+          type="button"
+          className="btn btn-primary me-2"
+          onClick={handleImprimirClick}
+          disabled={bloqueandoEdicion}
+        >
+          <i className="bi bi-printer"></i> Imprimir PDF
+        </button>
+      )}
       {onCancel && (
         <button type="button" className="btn btn-secondary" onClick={onCancel}>
           Volver

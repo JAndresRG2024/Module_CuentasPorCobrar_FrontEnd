@@ -1,8 +1,25 @@
-import React, { useMemo , useCallback } from 'react';
+import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { generarPDFPago } from '../../services/Pagos/pagos_Service';
+import { getClientes } from '../../services/externos/clientes_Service';
 
 function PagoList({ pagos, onEdit, onDelete, onPdfGenerated }) {
+  const [clientes, setClientes] = useState([]);
+
+  useEffect(() => {
+    getClientes()
+      .then(setClientes)
+      .catch(() => setClientes([]));
+  }, []);
+
+  const getNombreCliente = useCallback(
+    (id_cliente) => {
+      const cliente = clientes.find(c => String(c.id_cliente) === String(id_cliente));
+      return cliente ? `${cliente.nombre} ${cliente.apellido}` : id_cliente;
+    },
+    [clientes]
+  );
+
   const handleImprimirPDF = useCallback(
     async (pago) => {
       if (window.confirm("¿Desea generar e imprimir el PDF de este pago?")) {
@@ -80,7 +97,11 @@ function PagoList({ pagos, onEdit, onDelete, onPdfGenerated }) {
       filterFn: 'equals',
     },
     { accessorKey: 'id_cuenta', header: 'Cuenta' },
-    { accessorKey: 'id_cliente', header: 'Cliente' },
+    {
+      accessorKey: 'id_cliente',
+      header: 'Cliente',
+      Cell: ({ cell }) => getNombreCliente(cell.getValue()),
+    },
     {
       accessorKey: 'pdf_generado',
       header: 'PDF',
@@ -93,7 +114,7 @@ function PagoList({ pagos, onEdit, onDelete, onPdfGenerated }) {
       ),
       filterFn: 'equals',
     },
-  ], [onEdit, onDelete, handleImprimirPDF]);
+  ], [onEdit, onDelete, handleImprimirPDF, getNombreCliente]);
 
   return (
     <MaterialReactTable
