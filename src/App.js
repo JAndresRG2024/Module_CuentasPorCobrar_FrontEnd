@@ -35,7 +35,9 @@ function App() {
            <Route
             path="/reportes"
             element={
-              <ReporteEstadoCuenta />
+              <PrivateRoute permisos={['Reportes']}>
+                <ReporteEstadoCuenta />
+              </PrivateRoute>
             }/>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Welcome />} />

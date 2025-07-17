@@ -10,6 +10,7 @@ const Navbar = () => {
 
   const esAdmin = usuario?.nombre_rol === 'Admin' || usuario?.nombre_rol === 'Admin CC';
   const tienePermisoPagos = permisos.some(p => p.nombre_permiso === 'Pagos' && p.estado);
+  const tienePermisoReportes = permisos.some(p => p.nombre_permiso === 'Reportes' && p.estado);
 
   const handleLogout = () => {
     localStorage.removeItem('usuario');
@@ -35,11 +36,13 @@ const Navbar = () => {
               </NavLink>
             </li>
           )}
+          {tienePermisoReportes && (
           <li className="nav-item">
             <NavLink className="nav-link" to="/reportes">
               Reportes
             </NavLink>
           </li>
+    )}
         </ul>
         <div className="d-flex align-items-center ms-auto">
           {usuario && usuario.nombre ? (
