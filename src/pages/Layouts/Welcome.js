@@ -9,7 +9,7 @@ function Welcome() {
   const esAdmin = usuario?.nombre_rol === 'Admin' || usuario?.nombre_rol === 'Admin CC';
   // Solo si tiene permiso "Pagos"
   const tienePermisoPagos = permisos.some(p => p.nombre_permiso === 'Pagos' && p.estado);
-
+  const tienePermisoReportes = permisos.some(p => p.nombre_permiso === 'Reportes' && p.estado);
   return (
     <div className="text-center mt-5">
       <h1 className="mb-4">Bienvenido</h1>
@@ -38,6 +38,14 @@ function Welcome() {
             <Link to="/pagos" className="btn btn-outline-success btn-lg w-100">
               <i className="bi bi-cash-coin me-2"></i>
               Pagos
+            </Link>
+          </div>
+        )}
+        {tienePermisoReportes && (
+          <div className="col-md-3 mb-3">
+            <Link to="/reportes" className="btn btn-outline-success btn-lg w-100">
+              <i className="bi bi-cash-coin me-2"></i>
+              Reportes
             </Link>
           </div>
         )}
