@@ -89,6 +89,47 @@ useEffect(() => {
               )}
             </tbody>
           </table>
+          {/* Apartado de facturas pagadas totalmente */}
+    <h5 className="mt-4">Facturas Pagadas Totalmente</h5>
+    <table className="table">
+      <thead>
+        <tr>
+          <th>ID Factura</th>
+          <th>Monto Pagado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {(() => {
+          // Obtener IDs de facturas pendientes
+          const pendientesIds = selectedCliente.facturas_pendientes.map(f => f.id_factura);
+          // Agrupar pagos por factura
+          const pagosPorFactura = {};
+          selectedCliente.pagos_realizados?.forEach(pago => {
+            pago.detalles.forEach(detalle => {
+              if (!pagosPorFactura[detalle.id_factura]) pagosPorFactura[detalle.id_factura] = 0;
+              pagosPorFactura[detalle.id_factura] += Number(detalle.monto_pagado);
+            });
+          });
+          // Mostrar facturas pagadas totalmente (no están en pendientes y tienen pagos)
+          const pagadas = Object.entries(pagosPorFactura)
+            .filter(([id_factura]) => !pendientesIds.includes(Number(id_factura)))
+            .map(([id_factura, monto_pagado]) => ({ id_factura, monto_pagado }));
+
+          return pagadas.length > 0 ? (
+            pagadas.map(f => (
+              <tr key={f.id_factura}>
+                <td>{f.id_factura}</td>
+                <td>${f.monto_pagado}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="2" className="text-muted">Sin facturas pagadas totalmente</td>
+            </tr>
+          );
+        })()}
+      </tbody>
+    </table>
           <div className="alert alert-info mt-3">
             <strong>Saldo del Cliente:</strong> ${selectedCliente.total_deuda}
           </div>
