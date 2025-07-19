@@ -15,13 +15,13 @@ function CuentaBancariaList({ cuentas, onEdit, onDelete }) {
               className="btn btn-sm btn-warning me-2"
               onClick={() => onEdit(row.original)}
             >
-              <i className="bi bi-pencil-square"></i> Editar
+              <i className="bi bi-pencil-square"></i>
             </button>
             <button
               className="btn btn-sm btn-danger"
               onClick={() => onDelete(row.original.id_cuenta)}
             >
-              <i className="bi bi-trash"></i> Eliminar
+              <i className="bi bi-trash"></i>
             </button>
           </div>
         ),

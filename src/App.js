@@ -8,6 +8,7 @@ import Welcome from './pages/Layouts/Welcome';
 import { PrivateRoute } from './components/PrivateRoute';
 import { useAuthInit } from './hooks/useAuthInit';
 import Login from './pages/Login';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 function App() {
   useAuthInit();
