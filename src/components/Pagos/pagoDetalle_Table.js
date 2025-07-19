@@ -108,6 +108,7 @@ function PagoDetalleTable({
             className="btn btn-sm btn-secondary"
             onClick={() => setEditingDetalle(null)}
           >
+            
             Cancelar
           </button>
         </td>
