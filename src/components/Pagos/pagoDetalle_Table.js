@@ -78,11 +78,11 @@ function PagoDetalleTable({
             required
           >
             <option value="">Seleccione factura</option>
-            {facturas?.map(fact => (
-              <option key={fact.id_factura} value={fact.id_factura}>
-                {fact.id_factura} - {fact.nombre_cliente} - ${fact.monto_total}
-              </option>
-            ))}
+            {facturas?.map((fact) => (
+            <option key={fact.id_factura} value={fact.id_factura}>
+             {fact.numero_factura} - ${fact.monto_total}
+            </option>
+          ))}
           </select>
         </td>
         <td>
