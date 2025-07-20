@@ -302,7 +302,7 @@ function NuevoPagoPage() {
                           <option value="">Seleccione factura</option>
                           {facturas.map((fact) => (
                             <option key={fact.id_factura} value={fact.id_factura}>
-                              {fact.numero_factura} - ${fact.monto_total}
+                              {fact.id_factura} - {fact.numero_factura} - ${fact.monto_total}
                             </option>
                           ))}
                         </select>
@@ -375,7 +375,7 @@ function NuevoPagoPage() {
                         <option value="">Seleccione factura</option>
                         {facturas.map((fact) => (
                           <option key={fact.id_factura} value={fact.id_factura}>
-                            {fact.numero_factura} - ${fact.monto_total}
+                            {fact.id_factura} - {fact.numero_factura} - ${fact.monto_total}
                           </option>
                         ))}
                       </select>

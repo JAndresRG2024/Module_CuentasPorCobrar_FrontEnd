@@ -78,11 +78,11 @@ function PagoDetalleTable({
             required
           >
             <option value="">Seleccione factura</option>
-            {facturas?.map((fact) => (
-            <option key={fact.id_factura} value={fact.id_factura}>
-             {fact.numero_factura} - ${fact.monto_total}
-            </option>
-          ))}
+            {facturas.map((fact) => (
+              <option key={fact.id_factura} value={fact.id_factura}>
+                {fact.id_factura} - {fact.numero_factura} - ${fact.monto_total}
+              </option>
+            ))}
           </select>
         </td>
         <td>
@@ -95,7 +95,7 @@ function PagoDetalleTable({
           />
         </td>
         <td>{pendiente}</td>
-              <td>
+        <td>
           <button
             type="button"
             className="btn btn-sm btn-primary me-2"
@@ -108,7 +108,7 @@ function PagoDetalleTable({
             className="btn btn-sm btn-secondary"
             onClick={() => setEditingDetalle(null)}
           >
-            
+
             Cancelar
           </button>
         </td>
