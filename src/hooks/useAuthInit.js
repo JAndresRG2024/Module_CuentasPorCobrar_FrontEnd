@@ -2,40 +2,42 @@ import { useEffect } from 'react';
 
 export function useAuthInit() {
   useEffect(() => {
+    const API_URL_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
     const usuarioGuardado = localStorage.getItem('usuario');
-    console.log('usuarioGuardado:', usuarioGuardado);
+    const tokenGuardado = localStorage.getItem('token');
 
-    if (!usuarioGuardado) {
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get('token');
-      console.log('URL token:', token);
+    if (!usuarioGuardado && tokenGuardado) {
+      console.log('🔐 Validando token existente en localStorage...');
 
-      if (token) {
-        fetch('https://aplicacion-de-seguridad-v2.onrender.com/api/usuarios', {
-          headers: { Authorization: `Bearer ${token}` }
+      fetch(`${API_URL_BASE}/token/valido`, {
+        headers: {
+          Authorization: `Bearer ${tokenGuardado}`
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data?.usuario) {
+            localStorage.setItem('usuario', JSON.stringify({
+              ...data.usuario,
+              token: tokenGuardado
+            }));
+            console.log('✅ Token válido. Usuario autenticado y guardado en localStorage');
+          } else {
+            console.warn('❌ Token inválido. Borrando datos de localStorage...');
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+          }
         })
-          .then(res => {
-            console.log('API response status:', res.status);
-            return res.json();
-          })
-          .then(usuarioJson => {
-            console.log('usuarioJson recibido:', usuarioJson);
-            if (usuarioJson && usuarioJson.token) {
-              localStorage.setItem('usuario', JSON.stringify(usuarioJson));
-              console.log('Usuario guardado en localStorage');
-            } else {
-              console.log('No se recibió un usuario válido, no se guarda nada');
-            }
-            window.location.replace(window.location.pathname); // Limpia el token del URL
-          })
-          .catch((err) => {
-            console.log('Error en fetch:', err);
-          });
-      } else {
-        console.log('No se encontró token en el URL');
-      }
+        .catch(err => {
+          console.error('❌ Error al verificar token:', err);
+          localStorage.removeItem('token');
+          localStorage.removeItem('usuario');
+        });
+    } else if (usuarioGuardado) {
+      console.log('✅ Usuario ya está autenticado en localStorage');
     } else {
-      console.log('Ya existe usuario en localStorage, no se hace nada');
+      console.log('⚠️ No hay token ni usuario en localStorage');
     }
   }, []);
 }
